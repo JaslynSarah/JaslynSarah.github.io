@@ -7,7 +7,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:sans-serif;background:#fff;color:#111;}
-.wrap{padding:0.75rem;font-family:sans-serif;}
+.wrap{padding:0.75rem;}
 .title{text-align:center;font-size:20px;font-weight:500;letter-spacing:3px;margin-bottom:3px;}
 .sub{text-align:center;font-size:12px;color:#666;margin-bottom:10px;}
 .win-banner{display:none;text-align:center;padding:10px 14px;background:#E1F5EE;border:1px solid #5DCAA5;border-radius:8px;margin-bottom:10px;color:#085041;font-size:14px;font-weight:500;}
@@ -17,18 +17,7 @@ body{font-family:sans-serif;background:#fff;color:#111;}
 .bl-N{background:#EAF3DE;color:#27500A;} .bl-G{background:#FAEEDA;color:#633806;}
 .bl-O{background:#FAECE7;color:#712B13;}
 .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;}
-.cell{
-  aspect-ratio:1;
-  border-radius:5px;
-  border:1px solid #ddd;
-  background:#fff;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  padding:3px;
-  -webkit-tap-highlight-color:transparent;
-  user-select:none;
-  transition:background 0.1s,transform 0.08s;
-}
+.cell{aspect-ratio:1;border-radius:5px;border:1px solid #ddd;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:3px;-webkit-tap-highlight-color:transparent;user-select:none;transition:background 0.1s,transform 0.08s;}
 .cell:active{transform:scale(0.91);}
 .cell.free{background:#534AB7;cursor:default;}
 .cell.free span{font-size:9px;font-weight:500;color:#EEEDFE;letter-spacing:0.5px;}
@@ -36,18 +25,8 @@ body{font-family:sans-serif;background:#fff;color:#111;}
 .cell.marked .lbl{color:#EEEDFE;}
 .cell.won{background:#1D9E75;}
 .cell.won .lbl{color:#E1F5EE;}
-.lbl{
-  font-size:clamp(7px,2.5vw,11px);
-  font-weight:500;
-  color:#111;
-  text-align:center;
-  line-height:1.2;
-  word-break:break-word;
-  hyphens:auto;
-}
+.lbl{font-size:clamp(7px,2.5vw,11px);font-weight:500;color:#111;text-align:center;line-height:1.2;word-break:break-word;hyphens:auto;}
 .hint{text-align:center;font-size:11px;color:#999;margin-top:8px;}
-.new-btn{display:block;width:100%;margin-top:10px;padding:10px;font-size:14px;border-radius:8px;cursor:pointer;background:transparent;border:1px solid #ccc;color:#555;-webkit-tap-highlight-color:transparent;}
-.new-btn:active{background:#f5f5f5;transform:scale(0.98);}
 </style>
 </head>
 <body>
@@ -60,7 +39,6 @@ body{font-family:sans-serif;background:#fff;color:#111;}
   </div>
   <div class="grid" id="grid"></div>
   <p class="hint">Row, column, or diagonal wins</p>
-  <button class="new-btn" onclick="newCard()">New card ↺</button>
 </div>
 <script>
 const ALL=["My 6-pack used to be featured in Straits Times","My Partner works in Accenture","I don't look Chinese but I'm fluent in Chinese","I'm getting married this month","I am Accenture Boomerang",
@@ -92,7 +70,6 @@ function check(){
     [0,6,12,18,24],[4,8,12,16,20]];
   for(const line of lines){if(line.every(i=>marked[i])){won=true;line.forEach(i=>{const el=document.getElementById('c'+i);if(el){el.classList.remove('marked');el.classList.add('won');}});document.getElementById('win-banner').style.display='block';return;}}
 }
-function newCard(){build();render();}
 build();render();
 </script>
 </body>
