@@ -5,38 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Office Bingo</title>
 <style>
-  * { box-sizing: border-box; }
-  body { font-family: sans-serif; margin: 0; padding: 1rem; background: #fff; color: #111; }
-  h1 { text-align: center; font-size: 22px; font-weight: 500; letter-spacing: 2px; margin: 0 0 4px; }
-  #subheader { text-align: center; font-size: 13px; color: #666; margin: 0 0 1rem; }
-  .bingo-letters { display: flex; justify-content: center; gap: 3px; margin-bottom: 3px; }
-  .bl { flex: 1; max-width: 19vw; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 500; border-radius: 8px 8px 0 0; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:sans-serif;background:#fff;color:#111;}
+  .wrap{padding:12px;width:100%;}
+  h1{text-align:center;font-size:18px;font-weight:500;letter-spacing:3px;margin-bottom:2px;}
+  p{text-align:center;font-size:11px;color:#666;margin-bottom:10px;}
+  .win-banner{text-align:center;padding:8px 12px;background:#E1F5EE;border:1px solid #5DCAA5;border-radius:10px;margin-bottom:10px;color:#085041;font-size:14px;font-weight:500;display:none;}
+  .letters{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin-bottom:2px;}
+  .bl{height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;border-radius:6px 6px 0 0;}
   .bl-B{background:#EEEDFE;color:#3C3489;} .bl-I{background:#E6F1FB;color:#0C447C;}
   .bl-N{background:#EAF3DE;color:#27500A;} .bl-G{background:#FAEEDA;color:#633806;}
   .bl-O{background:#FAECE7;color:#712B13;}
-  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; width: 100%; max-width: 560px; margin: 0 auto; }
-  .cell { aspect-ratio: 1.2; border-radius: 8px; border: 1px solid #ddd; background: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.12s; padding: 4px; }
-  .cell:active { transform: scale(0.94); }
-  .cell.free-cell { background: #534AB7; cursor: default; }
-  .cell.free-cell span { font-size: 10px; font-weight: 600; color: #EEEDFE; letter-spacing: 0.5px; }
-  .cell.marked { background: #534AB7; }
-  .cell.marked .lbl { color: #EEEDFE; }
-  .cell.win-cell { background: #1D9E75; }
-  .cell.win-cell .lbl { color: #E1F5EE; }
-  .lbl { font-size: clamp(8px, 2.2vw, 12px); font-weight: 500; color: #111; text-align: center; line-height: 1.3; word-break: break-word; }
-  .win-banner { text-align: center; padding: 0.75rem 1rem; background: #E1F5EE; border: 1px solid #5DCAA5; border-radius: 10px; margin-bottom: 1rem; color: #085041; font-size: 17px; font-weight: 500; display: none; }
-  .hint { font-size: 12px; color: #999; text-align: center; margin-top: 10px; }
-  .bingo-wrap { max-width: 560px; margin: 0 auto; }
+  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;width:100%;}
+  .cell{aspect-ratio:1;border-radius:6px;border:1px solid #ddd;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:3px;-webkit-tap-highlight-color:transparent;transition:background 0.12s;}
+  .cell:active{transform:scale(0.92);}
+  .cell.free{background:#534AB7;border-color:#3C3489;cursor:default;}
+  .cell.free span{color:#EEEDFE;font-size:9px;letter-spacing:0.3px;}
+  .cell.marked{background:#534AB7;border-color:#3C3489;}
+  .cell.marked span{color:#EEEDFE;}
+  .cell.won{background:#1D9E75;border-color:#0F6E56;}
+  .cell.won span{color:#E1F5EE;}
+  .lbl{font-size:clamp(7px,2.4vw,10px);font-weight:500;color:#111;text-align:center;line-height:1.25;word-break:break-word;}
+  .hint{text-align:center;font-size:11px;color:#999;margin-top:8px;}
 </style>
 </head>
 <body>
 
-<h1>B I N G O</h1>
-<p id="subheader">Tap a square once you have gotten the answer</p>
-<div id="win-banner" class="win-banner">BINGO!</div>
-
-<div class="bingo-wrap">
-  <div class="bingo-letters">
+<div class="wrap">
+  <h1>B I N G O</h1>
+  <p>Tap a square when it happens in your meeting</p>
+  <div id="win-banner" class="win-banner">BINGO! You survived the meeting!</div>
+  <div class="letters">
     <div class="bl bl-B">B</div>
     <div class="bl bl-I">I</div>
     <div class="bl bl-N">N</div>
@@ -44,6 +43,7 @@
     <div class="bl bl-O">O</div>
   </div>
   <div class="grid" id="grid"></div>
+  <p class="hint">Row, column, or diagonal to win</p>
 </div>
 
 <script>
@@ -57,45 +57,46 @@ const ALL_SQUARES = [
 ];
 
 let squares = [], marked = Array(25).fill(false);
+marked[12] = true;
 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
+function shuffle(a) {
+  const b = [...a];
+  for (let i = b.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+    [b[i], b[j]] = [b[j], b[i]];
   }
-  return a;
+  return b;
 }
 
 function buildCard() {
-  const picked = shuffle(ALL_SQUARES).slice(0, 24);
+  const p = shuffle(ALL).slice(0, 24);
   squares = [];
-  for (let i = 0; i < 25; i++) squares.push(i === 12 ? 'FREE' : picked[i < 12 ? i : i - 1]);
+  for (let i = 0; i < 25; i++) squares.push(i === 12 ? 'FREE' : p[i < 12 ? i : i - 1]);
   marked = Array(25).fill(false);
   marked[12] = true;
 }
 
 function renderGrid() {
-  const grid = document.getElementById('grid');
-  grid.innerHTML = '';
+  const g = document.getElementById('grid');
+  g.innerHTML = '';
   for (let r = 0; r < 5; r++) {
     for (let c = 0; c < 5; c++) {
       const idx = c * 5 + r;
       const cell = document.createElement('div');
       cell.className = 'cell';
-      cell.id = 'cell-' + idx;
+      cell.id = 'c' + idx;
+      const s = document.createElement('span');
+      s.className = 'lbl';
       if (idx === 12) {
-        cell.classList.add('free-cell');
-        cell.innerHTML = '<span>FREE</span>';
+        cell.classList.add('free');
+        s.textContent = 'FREE';
       } else {
-        const lbl = document.createElement('span');
-        lbl.className = 'lbl';
-        lbl.textContent = squares[idx];
-        cell.appendChild(lbl);
-        cell.onclick = () => toggle(idx);
+        s.textContent = squares[idx];
+        cell.addEventListener('click', () => toggle(idx));
       }
+      cell.appendChild(s);
       if (marked[idx] && idx !== 12) cell.classList.add('marked');
-      grid.appendChild(cell);
+      g.appendChild(cell);
     }
   }
   document.getElementById('win-banner').style.display = 'none';
@@ -103,7 +104,7 @@ function renderGrid() {
 
 function toggle(idx) {
   marked[idx] = !marked[idx];
-  const cell = document.getElementById('cell-' + idx);
+  const cell = document.getElementById('c' + idx);
   if (marked[idx]) cell.classList.add('marked');
   else cell.classList.remove('marked');
   checkWin();
@@ -115,11 +116,11 @@ function checkWin() {
     [0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24],
     [0,6,12,18,24],[4,8,12,16,20]
   ];
-  for (const line of lines) {
-    if (line.every(i => marked[i])) {
-      line.forEach(i => {
-        const el = document.getElementById('cell-' + i);
-        if (el) { el.classList.remove('marked'); el.classList.add('win-cell'); }
+  for (const l of lines) {
+    if (l.every(i => marked[i])) {
+      l.forEach(i => {
+        const e = document.getElementById('c' + i);
+        if (e) { e.classList.remove('marked'); e.classList.add('won'); }
       });
       document.getElementById('win-banner').style.display = 'block';
       return;
